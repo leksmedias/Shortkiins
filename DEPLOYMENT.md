@@ -111,11 +111,15 @@ sudo nano .env
 
 Add your API keys:
 ```env
-GROQ_API_KEY=your_key_here
+# Required (3 keys):
+INWORLD_API_KEY=your_base64_credential_here
+GROQ_API_KEY=gsk_your_key_here
 WAVESPEED_API_KEY=your_key_here
-ASYNCFLOW_API_KEY=your_key_here
-FREEPIK_API_KEY=your_key_here  # Optional
-REPLICATE_API_TOKEN=your_key_here  # Optional
+
+# Optional:
+ASYNCFLOW_API_KEY=your_key_here  # Alternative TTS
+FREEPIK_API_KEY=your_key_here  # Alternative image gen
+REPLICATE_API_TOKEN=your_key_here  # Alternative image gen
 ```
 
 ### Step 6: Create Directories

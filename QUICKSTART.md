@@ -24,9 +24,9 @@ You need:
 - ✅ Sudo/root access
 - ✅ 2GB+ RAM
 - ✅ API Keys (free to get):
-  - [Groq API](https://console.groq.com/) - Free AI API
-  - [Wave Speed AI](https://wavespeed.ai/) - Image generation
-  - [AsyncFlow TTS](https://async.ai/) - Text-to-speech
+  - [Inworld AI TTS](https://studio.inworld.ai/) - Professional voice synthesis (Default)
+  - [Groq API](https://console.groq.com/) - Free AI for scene division
+  - [Wave Speed AI](https://wavespeed.ai/) - Fast image generation
 
 ---
 
@@ -90,23 +90,24 @@ sudo systemctl restart video-generator
 
 ## 🔑 Getting API Keys (Free)
 
-### Groq API (Required)
+### Inworld AI TTS (Required - Default Voice)
+1. Go to https://studio.inworld.ai/
+2. Sign up for free account
+3. Navigate to API settings
+4. Get your **base64 authentication credential**
+5. Copy the credential (looks like a long encoded string)
+
+### Groq API (Required - Scene Division)
 1. Go to https://console.groq.com/
 2. Sign up (free)
 3. Click "API Keys"
 4. Create new key
-5. Copy the key
+5. Copy the key (starts with `gsk_`)
 
-### Wave Speed AI (Required)
+### Wave Speed AI (Required - Image Generation)
 1. Visit https://wavespeed.ai/
 2. Sign up
 3. Get API key from dashboard
-4. Copy the key
-
-### AsyncFlow TTS (Required)
-1. Visit AsyncFlow website
-2. Sign up
-3. Get API key
 4. Copy the key
 
 ---
@@ -117,10 +118,10 @@ sudo systemctl restart video-generator
 # Edit configuration file
 sudo nano /var/www/Shortkiins/.env
 
-# Add your keys:
-GROQ_API_KEY=your_actual_key_here
-WAVESPEED_API_KEY=your_actual_key_here
-ASYNCFLOW_API_KEY=your_actual_key_here
+# Add your keys (3 required):
+INWORLD_API_KEY=your_base64_credential_here
+GROQ_API_KEY=gsk_your_groq_key_here
+WAVESPEED_API_KEY=your_wavespeed_key_here
 
 # Save (Ctrl+X, Y, Enter)
 

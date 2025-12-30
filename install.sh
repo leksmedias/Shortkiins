@@ -173,10 +173,11 @@ fi
 echo -e "${CYAN}"
 echo "You need API keys to use this application:"
 echo ""
-echo "1. Groq API (Required) - Free at https://console.groq.com/"
-echo "2. Wave Speed AI (Required) - Get at https://wavespeed.ai/"
-echo "3. AsyncFlow TTS (Required) - For text-to-speech"
-echo "4. Freepik API (Optional) - For image generation"
+echo "1. Inworld AI TTS (Required) - Get base64 credential at https://studio.inworld.ai/"
+echo "2. Groq API (Required) - Free at https://console.groq.com/"
+echo "3. Wave Speed AI (Required) - Get at https://wavespeed.ai/"
+echo "4. AsyncFlow TTS (Optional) - Alternative TTS"
+echo "5. Freepik API (Optional) - For image generation"
 echo ""
 echo "Do you want to configure API keys now?"
 echo -e "${NC}"
@@ -187,8 +188,19 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo ""
     echo -e "${YELLOW}Enter your API keys (press Enter to skip optional ones):${NC}"
 
+    # Inworld AI TTS (Required)
+    echo ""
+    echo -e "${CYAN}Inworld AI TTS - Default voice synthesis${NC}"
+    echo "Get your base64 credential from: https://studio.inworld.ai/"
+    read -p "Inworld API Key (Required - base64 credential): " INWORLD_KEY
+    if [ ! -z "$INWORLD_KEY" ]; then
+        sudo sed -i "s|INWORLD_API_KEY=.*|INWORLD_API_KEY=$INWORLD_KEY|g" .env
+        print_success "Inworld AI TTS configured"
+    fi
+
     # Groq API
     echo ""
+    echo -e "${CYAN}Groq API - For scene division${NC}"
     read -p "Groq API Key (Required): " GROQ_KEY
     if [ ! -z "$GROQ_KEY" ]; then
         sudo sed -i "s|GROQ_API_KEY=.*|GROQ_API_KEY=$GROQ_KEY|g" .env
@@ -197,18 +209,19 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
     # Wave Speed
     echo ""
+    echo -e "${CYAN}Wave Speed AI - For image generation${NC}"
     read -p "Wave Speed API Key (Required): " WAVESPEED_KEY
     if [ ! -z "$WAVESPEED_KEY" ]; then
         sudo sed -i "s|WAVESPEED_API_KEY=.*|WAVESPEED_API_KEY=$WAVESPEED_KEY|g" .env
         print_success "Wave Speed API key configured"
     fi
 
-    # AsyncFlow
+    # AsyncFlow (optional)
     echo ""
-    read -p "AsyncFlow API Key (Required): " ASYNCFLOW_KEY
+    read -p "AsyncFlow API Key (Optional - alternative TTS, press Enter to skip): " ASYNCFLOW_KEY
     if [ ! -z "$ASYNCFLOW_KEY" ]; then
         sudo sed -i "s|ASYNCFLOW_API_KEY=.*|ASYNCFLOW_API_KEY=$ASYNCFLOW_KEY|g" .env
-        print_success "AsyncFlow API key configured"
+        print_success "AsyncFlow TTS configured"
     fi
 
     # Freepik (optional)
@@ -365,12 +378,16 @@ echo -e "3. ${YELLOW}Keep system updated:${NC}"
 echo -e "   sudo apt update && sudo apt upgrade"
 echo ""
 
-if [ -z "$GROQ_KEY" ] || [ -z "$WAVESPEED_KEY" ] || [ -z "$ASYNCFLOW_KEY" ]; then
+if [ -z "$INWORLD_KEY" ] || [ -z "$GROQ_KEY" ] || [ -z "$WAVESPEED_KEY" ]; then
     echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${RED}⚠️  IMPORTANT: API KEYS NOT CONFIGURED!${NC}"
+    echo -e "${RED}⚠️  IMPORTANT: REQUIRED API KEYS NOT CONFIGURED!${NC}"
     echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo ""
-    echo -e "${YELLOW}The application won't work without API keys!${NC}"
+    echo -e "${YELLOW}The application needs these 3 required API keys:${NC}"
+    echo -e "  1. Inworld AI TTS (base64 credential)"
+    echo -e "  2. Groq API"
+    echo -e "  3. Wave Speed AI"
+    echo ""
     echo -e "Please configure them now:"
     echo -e "1. ${CYAN}sudo nano $INSTALL_DIR/.env${NC}"
     echo -e "2. Add your API keys"
