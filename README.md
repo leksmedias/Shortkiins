@@ -4,9 +4,11 @@ An automated video generation pipeline that converts scripts into fully produced
 
 ## Features
 
-- **Text-to-Speech**:
-  - Inworld AI for custom voice generation
-  - AsyncFlow TTS with word-level timestamps
+- **Text-to-Speech** (Inworld AI - Default):
+  - Professional voice synthesis with word-level timestamps
+  - Multiple voice options (Dennis, and more)
+  - Models: inworld-tts-1 and inworld-tts-1-max
+  - AsyncFlow TTS available as alternative
 - **Subtitle Generation**: Automatic .srt file creation using OpenAI Whisper
 - **AI Scene Division**: Intelligent script segmentation with Groq API (3s scenes)
 - **Image Generation**:
@@ -19,7 +21,7 @@ An automated video generation pipeline that converts scripts into fully produced
 ## Workflow
 
 1. **Script Input**: Accept user script (paste or file)
-2. **TTS Generation**: Convert script to speech with Inworld AI or AsyncFlow TTS
+2. **TTS Generation**: Convert script to speech with Inworld AI TTS (default)
 3. **Subtitle Creation**: Generate .srt from audio using Whisper
 4. **Scene Division**: Split script into 3-second scenes with detailed image prompts (Groq)
 5. **Image Generation**: Create background images using Wave Speed AI, Freepik, or Replicate
@@ -154,15 +156,25 @@ Complete code examples included for each framework!
 
 ### Text-to-Speech APIs
 
-#### Inworld AI
-- Sign up: https://studio.inworld.ai/
-- Documentation: https://docs.inworld.ai/
-- Features: Custom voice cloning, emotional control
+#### Inworld AI TTS (Default ⭐)
+- **Sign up**: https://studio.inworld.ai/
+- **Documentation**: https://docs.inworld.ai/
+- **API Endpoint**: `https://api.inworld.ai/tts/v1/voice`
+- **Authentication**: Basic auth with base64 credential
+- **Features**:
+  - Word-level timestamp alignment for perfect subtitle sync
+  - Multiple high-quality voices (Dennis, and more)
+  - Two models: `inworld-tts-1` (fast) and `inworld-tts-1-max` (quality)
+  - Adjustable speaking rate and temperature
+  - Supports 2000 characters per request
+  - MP3, LINEAR16, OGG_OPUS, FLAC formats
+- **Default Voice**: Dennis
+- **Sample Rates**: 8000-48000 Hz (default: 22050)
 
-#### AsyncFlow TTS
+#### AsyncFlow TTS (Alternative)
 - Features: Word-level timestamps, multilingual support
 - Models: AsyncFlow V2 (English), AsyncFlow Multilingual V1
-- Returns audio with precise word timing for better subtitle sync
+- Returns audio with precise word timing
 
 ### Scene Division
 

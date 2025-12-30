@@ -16,11 +16,9 @@ class InworldTTS:
         """Initialize the Inworld TTS client.
 
         Args:
-            api_key: Inworld API key. If not provided, uses settings.
+            api_key: Inworld API base64 credential. If not provided, uses settings.
         """
         self.api_key = api_key or settings.inworld_api_key
-        self.workspace = settings.inworld_workspace
-        self.scene = settings.inworld_scene
         self.base_url = "https://api.inworld.ai"
 
         if not self.api_key:
@@ -30,16 +28,20 @@ class InworldTTS:
         self,
         text: str,
         output_path: Path,
-        voice_id: Optional[str] = None,
-        audio_format: str = "mp3",
+        voice_id: Optional[str] = "Dennis",
+        model_id: str = "inworld-tts-1",
+        sample_rate: int = 22050,
+        enable_timestamps: bool = True,
     ) -> Path:
-        """Generate audio from text using Inworld AI.
+        """Generate audio from text using Inworld AI TTS API.
 
         Args:
-            text: The text to convert to speech
+            text: The text to convert to speech (max 2000 characters)
             output_path: Where to save the generated audio
-            voice_id: Optional custom voice ID
-            audio_format: Audio format (mp3, wav)
+            voice_id: Voice ID to use (default: Dennis)
+            model_id: Model ID - 'inworld-tts-1' or 'inworld-tts-1-max'
+            sample_rate: Sample rate in Hz (8000-48000)
+            enable_timestamps: Return word timestamp alignment
 
         Returns:
             Path to the generated audio file
@@ -47,42 +49,76 @@ class InworldTTS:
         Raises:
             RuntimeError: If audio generation fails
         """
-        logger.info(f"Generating voiceover with Inworld AI...")
+        import base64
+        import json
+
+        logger.info(f"Generating voiceover with Inworld AI TTS...")
+        logger.info(f"Voice: {voice_id}, Model: {model_id}")
 
         try:
-            # Inworld AI API endpoint for TTS
-            # Note: This is a simplified example. Actual implementation
-            # would use the Inworld SDK and proper authentication
+            # Inworld AI TTS API endpoint
+            url = f"{self.base_url}/tts/v1/voice"
+
+            # Basic authentication header
             headers = {
-                "Authorization": f"Bearer {self.api_key}",
+                "Authorization": f"Basic {self.api_key}",
                 "Content-Type": "application/json",
             }
 
+            # Request payload
             payload = {
-                "text": text,
-                "workspace": self.workspace,
-                "scene": self.scene,
-                "voice_id": voice_id,
-                "audio_format": audio_format,
+                "text": text[:2000],  # Max 2000 characters
+                "voiceId": voice_id,
+                "modelId": model_id,
+                "audioConfig": {
+                    "audioEncoding": "MP3",
+                    "sampleRateHertz": sample_rate,
+                    "speakingRate": 1.0,
+                },
+                "temperature": 1.1,
             }
 
-            # For actual implementation, use the Inworld SDK
-            # from inworld.client import InworldClient
-            # client = InworldClient(api_key=self.api_key)
-            # audio_data = client.generate_speech(text, voice_id)
+            # Enable word timestamps if requested
+            if enable_timestamps:
+                payload["timestampType"] = "WORD"
 
-            # Placeholder for actual API call
-            logger.warning(
-                "Using placeholder TTS. Implement actual Inworld API integration."
-            )
+            # Make API request
+            response = requests.post(url, headers=headers, json=payload, timeout=60)
+            response.raise_for_status()
 
-            # For now, create a dummy file to demonstrate the pipeline
+            result = response.json()
+
+            # Decode base64 audio content
+            audio_base64 = result["audioContent"]
+            audio_data = base64.b64decode(audio_base64)
+
+            # Save audio file
             output_path.parent.mkdir(parents=True, exist_ok=True)
-            output_path.touch()
+            output_path.write_bytes(audio_data)
+
+            # Save word timestamps if available
+            if "timestampInfo" in result and "wordAlignment" in result["timestampInfo"]:
+                alignment = result["timestampInfo"]["wordAlignment"]
+                timestamps_path = output_path.with_suffix(".timestamps.json")
+
+                timestamp_data = {
+                    "words": alignment.get("words", []),
+                    "wordStartTimeSeconds": alignment.get("wordStartTimeSeconds", []),
+                    "wordEndTimeSeconds": alignment.get("wordEndTimeSeconds", []),
+                }
+
+                with open(timestamps_path, "w") as f:
+                    json.dump(timestamp_data, f, indent=2)
+
+                logger.info(f"Word timestamps saved to: {timestamps_path}")
 
             logger.info(f"Audio saved to: {output_path}")
             return output_path
 
+        except requests.exceptions.HTTPError as e:
+            logger.error(f"HTTP error from Inworld API: {e}")
+            logger.error(f"Response: {e.response.text if e.response else 'No response'}")
+            raise RuntimeError(f"Inworld TTS API error: {e}")
         except Exception as e:
             logger.error(f"Failed to generate audio: {e}")
             raise RuntimeError(f"TTS generation failed: {e}")

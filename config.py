@@ -10,11 +10,16 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
     # API Keys
+    # Inworld AI TTS (Default TTS - base64 encoded credential)
     inworld_api_key: str = Field(default="", alias="INWORLD_API_KEY")
-    inworld_workspace: str = Field(default="", alias="INWORLD_WORKSPACE")
-    inworld_scene: str = Field(default="", alias="INWORLD_SCENE")
+
+    # Alternative TTS
     asyncflow_api_key: str = Field(default="", alias="ASYNCFLOW_API_KEY")
+
+    # Scene Division & AI
     groq_api_key: str = Field(default="", alias="GROQ_API_KEY")
+
+    # Image Generation
     freepik_api_key: str = Field(default="", alias="FREEPIK_API_KEY")
     replicate_api_token: str = Field(default="", alias="REPLICATE_API_TOKEN")
     wavespeed_api_key: str = Field(default="", alias="WAVESPEED_API_KEY")
