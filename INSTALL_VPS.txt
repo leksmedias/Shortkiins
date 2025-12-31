@@ -1,0 +1,73 @@
+╔════════════════════════════════════════════════════════════════════╗
+║            AI VIDEO GENERATOR - VPS INSTALLATION                    ║
+╚════════════════════════════════════════════════════════════════════╝
+
+OPTION 1: Download from Feature Branch
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+wget https://raw.githubusercontent.com/leksmedias/Shortkiins/claude/video-generator-pipeline-fal1T/install.sh
+chmod +x install.sh
+bash install.sh
+
+
+OPTION 2: Manual Installation (Copy-Paste All Commands)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Install dependencies
+sudo apt update && sudo apt install -y python3 python3-pip python3-venv ffmpeg git
+
+# Clone repository from feature branch
+git clone -b claude/video-generator-pipeline-fal1T https://github.com/leksmedias/Shortkiins.git
+cd Shortkiins
+
+# Set up Python environment
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# Configure API keys
+cp .env.example .env
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "⚠️  IMPORTANT: Configure your API keys now!"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "Edit .env file and add these REQUIRED keys:"
+echo "1. INWORLD_API_KEY (base64 credential from https://studio.inworld.ai/)"
+echo "2. GROQ_API_KEY (free from https://console.groq.com/)"
+echo "3. WAVESPEED_API_KEY (from https://wavespeed.ai/)"
+echo ""
+nano .env
+
+# Create directories
+mkdir -p output temp static
+
+# Test installation
+python main.py --help
+
+# Start web interface
+echo ""
+echo "✅ Installation complete! Starting web interface..."
+echo "Access at: http://YOUR_SERVER_IP:8000"
+python api.py
+
+
+OPTION 3: One-Liner Quick Install
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+curl -fsSL https://raw.githubusercontent.com/leksmedias/Shortkiins/claude/video-generator-pipeline-fal1T/install.sh | bash
+
+
+TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+If download fails (404 error):
+- The install.sh is on the feature branch, not main
+- Use the full branch URL shown in Option 1 or 3
+- Or use Option 2 (manual installation)
+
+If Git clone fails:
+- Make sure you have Git installed: sudo apt install git
+- Use HTTPS URL (shown above)
+- For private repos, use SSH or authenticate with token
+
+FOR HELP:
+See SIMPLE_INSTALL.md in the repository for detailed instructions
